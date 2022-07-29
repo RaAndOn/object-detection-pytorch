@@ -6,7 +6,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.ssh/:/root/.ssh
       - ~/.gitconfig:/etc/gitconfig
-      - ~/code/image_detector:/root/image_detector
+      - ~/code/object-detection-pytorch:/root/object-detection-pytorch
     environment:
       - DISPLAY
     network_mode: host
