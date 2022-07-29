@@ -1,0 +1,19 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  detector:
+    build: .
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.ssh/:/root/.ssh
+      - ~/.gitconfig:/etc/gitconfig
+      - ~/code/image_detector:/root/image_detector
+    environment:
+      - DISPLAY
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
