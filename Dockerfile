@@ -11,4 +11,6 @@ RUN pip3 install torch torchvision torchaudio --extra-index-url https://download
 
 RUN pip3 install opencv-contrib-python
 
+WORKDIR /root/object-detection-pytorch
+
 CMD ["tail", "-f", "/dev/null"]
