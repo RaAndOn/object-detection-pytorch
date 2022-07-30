@@ -3,6 +3,8 @@
 
 # import the necessary packages
 from torchvision.models import detection
+from torchvision.models import ResNet50_Weights, MobileNet_V3_Large_Weights
+from torchvision.models.detection import RetinaNet_ResNet50_FPN_Weights, FasterRCNN_ResNet50_FPN_Weights, FasterRCNN_MobileNet_V3_Large_320_FPN_Weights
 import numpy as np
 import argparse
 import pickle
@@ -30,17 +32,27 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 CLASSES = pickle.loads(open(args["labels"], "rb").read())
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
-# initialize a dictionary containing model name and it's corresponding 
+# initialize a dictionary containing model name and it's corresponding
 # torchvision function call
 MODELS = {
-	"frcnn-resnet": detection.fasterrcnn_resnet50_fpn,
-	"frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_320_fpn,
-	"retinanet": detection.retinanet_resnet50_fpn
+	"frcnn-resnet": detection.fasterrcnn_resnet50_fpn(weights=FasterRCNN_ResNet50_FPN_Weights.DEFAULT, progress=True,
+	num_classes=len(CLASSES), weights_backbone=ResNet50_Weights.DEFAULT),
+	"frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_320_fpn(weights=FasterRCNN_MobileNet_V3_Large_320_FPN_Weights.DEFAULT, progress=True,
+	num_classes=len(CLASSES), weights_backbone=MobileNet_V3_Large_Weights.DEFAULT),
+	"retinanet": detection.retinanet_resnet50_fpn(weights=RetinaNet_ResNet50_FPN_Weights.DEFAULT, progress=True,
+	num_classes=len(CLASSES), weights_backbone=ResNet50_Weights.DEFAULT)
 }
+# MODELS = {
+# 	"frcnn-resnet": detection.fasterrcnn_resnet50_fpn(weights=FasterRCNN_ResNet50_FPN_Weights.COCO_V1, progress=True,
+# 	num_classes=len(CLASSES), weights_backbone=ResNet50_Weights.IMAGENET1K_V1),
+# 	"frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_320_fpn(weights=FasterRCNN_MobileNet_V3_Large_320_FPN_Weights.COCO_V1, progress=True,
+# 	num_classes=len(CLASSES), weights_backbone=MobileNet_V3_Large_Weights.IMAGENET1K_V1),
+# 	"retinanet": detection.retinanet_resnet50_fpn(weights=RetinaNet_ResNet50_FPN_Weights.COCO_V1, progress=True,
+# 	num_classes=len(CLASSES), weights_backbone=ResNet50_Weights.IMAGENET1K_V1)
+# }
 
 # load the model and set it to evaluation mode
-model = MODELS[args["model"]](pretrained=True, progress=True,
-	num_classes=len(CLASSES), pretrained_backbone=True).to(DEVICE)
+model = MODELS[args["model"]].to(DEVICE)
 model.eval()
 
 # load the image from disk
